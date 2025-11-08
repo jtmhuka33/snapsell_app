@@ -1,7 +1,7 @@
 import { ProductAnalysis } from "@/types/product";
 
 export const CONDITION_CODES = {
-    NEW: '1000',
+    NEW: '1000|1500',
     REFURBISHED: '2000|2010|2020|2030',
     USED: '3000|4000|5000|6000|7000'
 };
@@ -84,9 +84,6 @@ async function searchEbayByCondition(
 
     const url = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(query)}&filter=${encodedFilter}&limit=${limit}&fieldgroups=MATCHING_ITEMS`;
 
-    console.log('🔍 eBay Search URL:', url);
-    console.log('🔑 Token (first 20 chars):', token.substring(0, 20));
-
     const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -117,12 +114,29 @@ function calculatePriceStats(items: EbayItem[]): PriceStats {
         return { min: 0, max: 0, average: 0, count: 0 };
     }
 
-    const prices = items
+    let prices = items
         .filter(item => item.price && item.price.value)
-        .map(item => parseFloat(item.price.value));
+        .map(item => parseFloat(item.price.value))
+        .sort((a, b) => a - b);
 
     if (prices.length === 0) {
         return { min: 0, max: 0, average: 0, count: 0 };
+    }
+
+    // Only remove outliers if we have enough data (10+ items)
+    if (prices.length >= 10) {
+        const q1 = prices[Math.floor(prices.length * 0.25)];
+        const q3 = prices[Math.floor(prices.length * 0.75)];
+        const iqr = q3 - q1;
+        const lowerBound = q1 - (1.5 * iqr);
+        const upperBound = q3 + (1.5 * iqr);
+
+        const filteredPrices = prices.filter(p => p >= lowerBound && p <= upperBound);
+
+        // Only use filtered prices if we still have at least 5 items
+        if (filteredPrices.length >= 5) {
+            prices = filteredPrices;
+        }
     }
 
     const min = Math.min(...prices);
@@ -144,15 +158,12 @@ export async function researchEbayPrices(
     product: ProductAnalysis
 ): Promise<PriceResearchResult> {
     try {
-        // Get OAuth token
         const token = await getEbayToken();
 
-        // Create search query from product information
-        const searchQuery = `${product.product.manufacturer} ${product.product.title}`.trim();
+        const searchQuery = `${product.product.title}`.trim();
 
         console.log('Searching eBay for:', searchQuery);
 
-        // Search for each condition in parallel
         const [newResults, refurbishedResults, usedResults] = await Promise.all([
             searchEbayByCondition(token, {
                 query: searchQuery,
@@ -171,16 +182,16 @@ export async function researchEbayPrices(
             })
         ]);
 
-        // Calculate statistics for each condition
+        // Log actual item counts
+        console.log('Items found:', {
+            new: newResults.itemSummaries?.length || 0,
+            refurbished: refurbishedResults.itemSummaries?.length || 0,
+            used: usedResults.itemSummaries?.length || 0
+        });
+
         const newStats = calculatePriceStats(newResults.itemSummaries || []);
         const refurbishedStats = calculatePriceStats(refurbishedResults.itemSummaries || []);
         const usedStats = calculatePriceStats(usedResults.itemSummaries || []);
-
-        console.log('Price research results:', {
-            new: newStats,
-            refurbished: refurbishedStats,
-            used: usedStats
-        });
 
         return {
             new: newStats,

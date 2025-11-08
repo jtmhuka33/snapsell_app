@@ -1,11 +1,12 @@
 import {View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert} from "react-native";
-import {CameraType, CameraView, useCameraPermissions} from "expo-camera";
+import {CameraType, CameraView, useCameraPermissions, FlashMode, CameraCapturedPicture} from "expo-camera";
 import {useRef, useState} from "react";
 import {Image} from "expo-image";
 import {router} from "expo-router";
 
 export default function Index() {
     const [facing, setFacing] = useState<CameraType>('back');
+    const [flashMode, setFlashMode] = useState<FlashMode>('off');
     const [permission, requestPermission] = useCameraPermissions();
     const [photos, setPhotos] = useState<CameraCapturedPicture[]>([]);
     const [currentPhoto, setCurrentPhoto] = useState<CameraCapturedPicture | undefined>();
@@ -48,6 +49,20 @@ export default function Index() {
     function toggleCameraFacing() {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
     }
+
+    const toggleFlash = () => {
+        setFlashMode(current => {
+            if (current === 'off') return 'on';
+            if (current === 'on') return 'auto';
+            return 'off';
+        });
+    };
+
+    const getFlashIcon = () => {
+        if (flashMode === 'off') return '⚡️';
+        if (flashMode === 'on') return '⚡';
+        return '⚡️A';
+    };
 
     const retakePhoto = () => {
         setCurrentPhoto(undefined);
@@ -98,11 +113,30 @@ export default function Index() {
     // Main camera view
     return (
         <View className="flex-1">
-            <CameraView autofocus="on" style={styles.camera} facing={facing} ref={cameraRef}/>
+            <CameraView
+                autofocus="on"
+                style={styles.camera}
+                facing={facing}
+                flash={flashMode}
+                ref={cameraRef}
+            />
+
+            {/* Flash control */}
+            <View className="absolute top-12 right-5">
+                <TouchableOpacity
+                    onPress={toggleFlash}
+                    className="bg-black/50 rounded-full w-14 h-14 items-center justify-center"
+                >
+                    <Text className="text-2xl">{getFlashIcon()}</Text>
+                    <Text className="text-white text-[10px] font-bold mt-[-2px]">
+                        {flashMode.toUpperCase()}
+                    </Text>
+                </TouchableOpacity>
+            </View>
 
             {/* Photo counter and gallery preview */}
             {photos.length > 0 && (
-                <View className="absolute top-12 left-0 right-0 px-5">
+                <View className="absolute top-12 left-0 right-20 px-5">
                     <View className="bg-black/70 rounded-lg p-3">
                         <Text className="text-white text-center font-bold mb-2">
                             {photos.length} photo{photos.length !== 1 ? 's' : ''} taken
