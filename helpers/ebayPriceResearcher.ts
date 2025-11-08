@@ -1,10 +1,9 @@
 import { ProductAnalysis } from "@/types/product";
 
-// eBay condition codes
 export const CONDITION_CODES = {
     NEW: '1000',
-    REFURBISHED: '2000,2010,2020,2030', // Various refurbished conditions
-    USED: '3000,4000,5000,6000,7000' // Used conditions
+    REFURBISHED: '2000|2010|2020|2030',
+    USED: '3000|4000|5000|6000|7000'
 };
 
 interface EbaySearchParams {
@@ -52,7 +51,7 @@ async function getEbayToken(): Promise<string> {
         throw new Error('eBay API credentials not configured');
     }
 
-    const credentials = Buffer.from(`${appId}:${certId}`).toString('base64');
+    const credentials = btoa(`${appId}:${certId}`);
 
     const response = await fetch('https://api.ebay.com/identity/v1/oauth2/token', {
         method: 'POST',
@@ -80,27 +79,34 @@ async function searchEbayByCondition(
 ): Promise<EbaySearchResponse> {
     const { query, condition, limit = 50 } = params;
 
-    // URL encode the filter parameter
-    const filter = `conditions:{${condition}}`;
+    const filter = `conditionIds:{${condition.replace(/,/g, '|')}}`;
     const encodedFilter = encodeURIComponent(filter);
 
     const url = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(query)}&filter=${encodedFilter}&limit=${limit}&fieldgroups=MATCHING_ITEMS`;
+
+    console.log('🔍 eBay Search URL:', url);
+    console.log('🔑 Token (first 20 chars):', token.substring(0, 20));
 
     const response = await fetch(url, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'X-EBAY-C-MARKETPLACE-ID': 'EBAY_DE', // Germany marketplace
+            'X-EBAY-C-MARKETPLACE-ID': 'EBAY_DE',
             'X-EBAY-C-ENDUSERCTX': 'affiliateCampaignId=<ePNCampaignId>'
         }
     });
 
+    console.log('📡 Response status:', response.status);
+
+    const data = await response.json();
+    console.log('📦 Response data:', JSON.stringify(data, null, 2));
+
     if (!response.ok) {
-        console.error('eBay API error:', response.status, response.statusText);
+        console.error('❌ eBay API error:', response.status, data);
         return { itemSummaries: [], total: 0 };
     }
 
-    return await response.json();
+    return data;
 }
 
 /**
