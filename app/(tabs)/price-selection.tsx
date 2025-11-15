@@ -39,7 +39,9 @@ export default function PriceSelection() {
             params: {
                 analysisResult: JSON.stringify(analysisResult),
                 selectedCondition,
-                selectedPrice: JSON.stringify(selectedPrice)
+                selectedPrice: JSON.stringify(selectedPrice),
+                recommendedPrice: priceResults.recommendedPrice?.toString() || '',
+                priceRange: JSON.stringify(priceResults.priceRange || {})
             }
         });
     };
@@ -86,22 +88,35 @@ export default function PriceSelection() {
                 {hasData ? (
                     <>
                         <View className="mt-4 pt-4 border-t border-gray-200">
+                            {/* Median Price (Most Important) */}
+                            <View className="flex-row justify-between items-center mb-3 bg-green-50 p-3 rounded-lg">
+                                <Text className="text-gray-700 font-semibold">Median Price:</Text>
+                                <Text className="text-xl font-bold text-green-600">
+                                    €{priceData.median}
+                                </Text>
+                            </View>
+
+                            {/* Price Range */}
                             <View className="flex-row justify-between items-center mb-2">
                                 <Text className="text-gray-600">Price Range:</Text>
-                                <Text className="text-lg font-bold text-gray-800">
+                                <Text className="text-base font-semibold text-gray-800">
                                     €{priceData.min} - €{priceData.max}
                                 </Text>
                             </View>
+
+                            {/* Average Price */}
                             <View className="flex-row justify-between items-center mb-2">
                                 <Text className="text-gray-600">Average Price:</Text>
-                                <Text className="text-lg font-bold text-green-600">
+                                <Text className="text-base font-semibold text-gray-700">
                                     €{priceData.average}
                                 </Text>
                             </View>
+
+                            {/* Data Source Info */}
                             <View className="flex-row justify-between items-center">
                                 <Text className="text-gray-600">Based on:</Text>
                                 <Text className="text-sm text-gray-500">
-                                    {priceData.count} active listing{priceData.count !== 1 ? 's' : ''}
+                                    {priceData.count} verified listing{priceData.count !== 1 ? 's' : ''}
                                 </Text>
                             </View>
                         </View>
@@ -109,7 +124,10 @@ export default function PriceSelection() {
                         {isSelected && (
                             <View className="mt-4 bg-blue-100 rounded-lg p-3">
                                 <Text className="text-blue-700 text-sm text-center font-medium">
-                                    💡 Suggested listing price: €{priceData.average}
+                                    💡 Suggested listing price: €{priceData.median}
+                                </Text>
+                                <Text className="text-blue-600 text-xs text-center mt-1">
+                                    (Median is more reliable than average)
                                 </Text>
                             </View>
                         )}
@@ -133,14 +151,26 @@ export default function PriceSelection() {
                     <Text className="text-2xl font-bold text-gray-800 mb-2">
                         Select Condition
                     </Text>
-                    <Text className="text-gray-600">
+                    <Text className="text-gray-600 mb-4">
                         Choose the condition that best matches your item
                     </Text>
-                    <View className="mt-4 bg-blue-50 rounded-lg p-3">
-                        <Text className="text-sm text-blue-800">
+                    <View className="bg-blue-50 rounded-lg p-3">
+                        <Text className="text-sm text-blue-800 font-medium">
                             📦 {analysisResult.product.manufacturer} {analysisResult.product.title}
                         </Text>
                     </View>
+                </View>
+
+                {/* Info Banner */}
+                <View className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-6 mt-4">
+                    <Text className="text-yellow-800 text-xs font-semibold mb-1">
+                        💡 How prices are calculated:
+                    </Text>
+                    <Text className="text-yellow-700 text-xs">
+                        • Median price is the middle value - most reliable{'\n'}
+                        • Outliers (extreme prices) are automatically removed{'\n'}
+                        • More listings = more reliable pricing data
+                    </Text>
                 </View>
 
                 {/* Condition Cards */}
@@ -169,10 +199,10 @@ export default function PriceSelection() {
                 <View className="px-6 pb-6">
                     <View className="bg-gray-100 rounded-lg p-4">
                         <Text className="text-xs text-gray-600 text-center">
-                            Prices based on active eBay listings in Germany
+                            Prices from active eBay listings in Germany
                         </Text>
                         <Text className="text-xs text-gray-500 text-center mt-1">
-                            Search query: {priceResults.searchQuery}
+                            Search: {priceResults.searchQuery}
                         </Text>
                     </View>
                 </View>

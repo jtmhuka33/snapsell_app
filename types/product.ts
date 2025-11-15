@@ -6,21 +6,17 @@ export interface ProductAnalysis {
     }
 }
 
+export interface PriceStats {
+    min: number;
+    max: number;
+    average: number;
+    median: number;
+    count: number;
+}
+
 export interface PriceResearch {
-    new: {
-        min: number
-        max: number
-    }
-    refurbished: {
-        min: number
-        max: number
-    }
-    usedGood: {
-        min: number
-        max: number
-    }
-    usedPoor: {
-        min: number
-        max: number
-    }
+    new: PriceStats;
+    refurbished: PriceStats;
+    usedGood: PriceStats;
+    usedPoor: PriceStats;
 }
