@@ -39,6 +39,29 @@ export default function Review() {
         };
     });
 
+    const handleBack = () => {
+        // If editing, cancel edit
+        if (isEditing) {
+            setIsEditing(false);
+            return;
+        }
+
+        // If not on first step, go to previous step
+        if (step === 'description') {
+            setStep('manufacturer');
+            return;
+        }
+        if (step === 'manufacturer') {
+            setStep('title');
+            return;
+        }
+
+        // On first step, go back to previous screen
+        if (router.canGoBack()) {
+            router.back();
+        }
+    };
+
     const handleNo = () => {
         setIsEditing(true);
     };
@@ -106,10 +129,19 @@ export default function Review() {
     return (
         <ScrollView className="flex-1 bg-white dark:bg-black">
             <View className="px-6 py-8">
-                <Text className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Review Product Details
-                </Text>
-                <Text className="text-sm text-gray-600 dark:text-gray-400 mb-8">
+                {/* Header with Back Button */}
+                <View className="flex-row items-center mb-2">
+                    <TouchableOpacity
+                        onPress={handleBack}
+                        className="mr-3 p-2 -ml-2"
+                    >
+                        <Text className="text-2xl">←</Text>
+                    </TouchableOpacity>
+                    <Text className="text-3xl font-bold text-gray-900 dark:text-white flex-1">
+                        Review Product Details
+                    </Text>
+                </View>
+                <Text className="text-sm text-gray-600 dark:text-gray-400 mb-8 ml-12">
                     Step {step === 'title' ? '1' : step === 'manufacturer' ? '2' : '3'} of 3
                 </Text>
 

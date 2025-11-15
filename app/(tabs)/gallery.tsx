@@ -12,6 +12,12 @@ export default function Gallery() {
     const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    const handleBack = () => {
+        if (router.canGoBack()) {
+            router.back();
+        }
+    };
+
     const togglePhotoSelection = (uri: string) => {
         if (selectedPhotos.includes(uri)) {
             setSelectedPhotos(selectedPhotos.filter(u => u !== uri));
@@ -62,10 +68,18 @@ export default function Gallery() {
 
     return (
         <View className="flex-1 bg-white">
-            {/* Header */}
+            {/* Header with Back Button */}
             <View className="p-4 border-b border-gray-200">
-                <Text className="text-2xl font-bold text-gray-800">Select Photos</Text>
-                <Text className="text-gray-600 mt-1">
+                <View className="flex-row items-center mb-2">
+                    <TouchableOpacity
+                        onPress={handleBack}
+                        className="mr-3 p-2 -ml-2"
+                    >
+                        <Text className="text-2xl">←</Text>
+                    </TouchableOpacity>
+                    <Text className="text-2xl font-bold text-gray-800 flex-1">Select Photos</Text>
+                </View>
+                <Text className="text-gray-600 ml-12">
                     {selectedPhotos.length} of {photoUris.length} selected
                 </Text>
             </View>

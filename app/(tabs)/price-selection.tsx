@@ -13,6 +13,12 @@ export default function PriceSelection() {
 
     const [selectedCondition, setSelectedCondition] = useState<ConditionType | null>(null);
 
+    const handleBack = () => {
+        if (router.canGoBack()) {
+            router.back();
+        }
+    };
+
     const handleSelectCondition = (condition: ConditionType) => {
         setSelectedCondition(condition);
     };
@@ -146,15 +152,23 @@ export default function PriceSelection() {
     return (
         <View className="flex-1 bg-gray-50">
             <ScrollView className="flex-1">
-                {/* Header */}
+                {/* Header with Back Button */}
                 <View className="bg-white p-6 border-b border-gray-200">
-                    <Text className="text-2xl font-bold text-gray-800 mb-2">
-                        Select Condition
-                    </Text>
-                    <Text className="text-gray-600 mb-4">
+                    <View className="flex-row items-center mb-2">
+                        <TouchableOpacity
+                            onPress={handleBack}
+                            className="mr-3 p-2 -ml-2"
+                        >
+                            <Text className="text-2xl">←</Text>
+                        </TouchableOpacity>
+                        <Text className="text-2xl font-bold text-gray-800 flex-1">
+                            Select Condition
+                        </Text>
+                    </View>
+                    <Text className="text-gray-600 mb-4 ml-12">
                         Choose the condition that best matches your item
                     </Text>
-                    <View className="bg-blue-50 rounded-lg p-3">
+                    <View className="bg-blue-50 rounded-lg p-3 ml-12">
                         <Text className="text-sm text-blue-800 font-medium">
                             📦 {analysisResult.product.manufacturer} {analysisResult.product.title}
                         </Text>

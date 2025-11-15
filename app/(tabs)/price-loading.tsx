@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { researchEbayPrices } from "@/helpers/ebayPriceResearcher";
@@ -10,6 +10,12 @@ export default function PriceLoading() {
 
     const [status, setStatus] = useState("Connecting to eBay...");
     const [error, setError] = useState<string | null>(null);
+
+    const handleBack = () => {
+        if (router.canGoBack()) {
+            router.back();
+        }
+    };
 
     useEffect(() => {
         researchPrices();
@@ -46,6 +52,14 @@ export default function PriceLoading() {
     if (error) {
         return (
             <View className="flex-1 bg-white justify-center items-center px-6">
+                {/* Back Button */}
+                <TouchableOpacity
+                    onPress={handleBack}
+                    className="absolute top-12 left-4 p-2 z-10"
+                >
+                    <Text className="text-2xl">←</Text>
+                </TouchableOpacity>
+
                 <Text className="text-6xl mb-4">❌</Text>
                 <Text className="text-xl font-bold text-gray-800 mb-2">
                     Error Researching Prices
@@ -53,15 +67,29 @@ export default function PriceLoading() {
                 <Text className="text-gray-600 text-center mb-6">
                     {error}
                 </Text>
-                <Text className="text-sm text-gray-500 text-center">
+                <Text className="text-sm text-gray-500 text-center mb-6">
                     Please check your eBay API credentials and try again
                 </Text>
+                <TouchableOpacity
+                    onPress={handleBack}
+                    className="bg-blue-500 px-6 py-3 rounded-lg"
+                >
+                    <Text className="text-white font-semibold">Go Back</Text>
+                </TouchableOpacity>
             </View>
         );
     }
 
     return (
         <View className="flex-1 bg-white justify-center items-center px-6">
+            {/* Back Button */}
+            <TouchableOpacity
+                onPress={handleBack}
+                className="absolute top-12 left-4 p-2 z-10"
+            >
+                <Text className="text-2xl">←</Text>
+            </TouchableOpacity>
+
             <View className="mb-8">
                 <Text className="text-6xl text-center mb-4">💰</Text>
                 <ActivityIndicator size="large" color="#3B82F6" />
