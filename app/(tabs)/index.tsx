@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Pressable} from "react-native";
-import {CameraCapturedPicture, CameraType, CameraView, useCameraPermissions, FlashMode, CameraCapturedPicture} from "expo-camera";
+import {CameraCapturedPicture, CameraType, CameraView, useCameraPermissions, FlashMode} from "expo-camera";
 import {useEffect, useRef, useState} from "react";
 import {Image} from "expo-image";
 import {router} from "expo-router";
