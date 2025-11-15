@@ -1,8 +1,14 @@
-import {View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert} from "react-native";
-import {CameraType, CameraView, useCameraPermissions} from "expo-camera";
-import {useRef, useState} from "react";
+import {View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Pressable} from "react-native";
+import {CameraCapturedPicture, CameraType, CameraView, useCameraPermissions} from "expo-camera";
+import {useEffect, useRef, useState} from "react";
 import {Image} from "expo-image";
 import {router} from "expo-router";
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+    withSequence,
+} from 'react-native-reanimated';
 
 export default function Index() {
     const [facing, setFacing] = useState<CameraType>('back');
@@ -10,6 +16,63 @@ export default function Index() {
     const [photos, setPhotos] = useState<CameraCapturedPicture[]>([]);
     const [currentPhoto, setCurrentPhoto] = useState<CameraCapturedPicture | undefined>();
     const cameraRef = useRef<CameraView>(null);
+
+    // Focus state
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [focusPoint, setFocusPoint] = useState({ x: 0, y: 0, visible: false });
+
+    // Animation values for focus indicator
+    const focusScale = useSharedValue(0);
+    const focusOpacity = useSharedValue(0);
+
+    // Reset autofocus when isRefreshing changes
+    useEffect(() => {
+        if (isRefreshing) {
+            setIsRefreshing(false);
+        }
+    }, [isRefreshing]);
+
+    // Handle tap on camera view to focus
+    const handleCameraPress = (event: any) => {
+        const { locationX, locationY } = event.nativeEvent;
+
+        // Set focus point position
+        setFocusPoint({
+            x: locationX,
+            y: locationY,
+            visible: true
+        });
+
+        // Trigger autofocus refresh
+        setIsRefreshing(true);
+
+        // Animate focus indicator
+        focusScale.value = 0;
+        focusOpacity.value = 1;
+
+        focusScale.value = withSequence(
+            withTiming(1.2, { duration: 200 }),
+            withTiming(1, { duration: 100 })
+        );
+
+        focusOpacity.value = withTiming(1, { duration: 200 });
+
+        // Hide focus indicator after 1 second
+        setTimeout(() => {
+            focusOpacity.value = withTiming(0, { duration: 300 });
+            setTimeout(() => {
+                setFocusPoint(prev => ({ ...prev, visible: false }));
+            }, 300);
+        }, 1000);
+    };
+
+    // Animated style for focus indicator
+    const focusIndicatorStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ scale: focusScale.value }],
+            opacity: focusOpacity.value,
+        };
+    });
 
     if (!permission) {
         return (
@@ -98,7 +161,30 @@ export default function Index() {
     // Main camera view
     return (
         <View className="flex-1">
-            <CameraView autofocus="on" style={styles.camera} facing={facing} ref={cameraRef}/>
+            <Pressable onPress={handleCameraPress} style={styles.cameraContainer}>
+                <CameraView
+                    autofocus={isRefreshing ? "off" : "on"}
+                    style={styles.camera}
+                    facing={facing}
+                    ref={cameraRef}
+                />
+
+                {/* Focus indicator */}
+                {focusPoint.visible && (
+                    <Animated.View
+                        style={[
+                            styles.focusIndicator,
+                            {
+                                left: focusPoint.x - 40,
+                                top: focusPoint.y - 40,
+                            },
+                            focusIndicatorStyle,
+                        ]}
+                    >
+                        <View style={styles.focusInner} />
+                    </Animated.View>
+                )}
+            </Pressable>
 
             {/* Photo counter and gallery preview */}
             {photos.length > 0 && (
@@ -163,6 +249,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#000',
     },
+    cameraContainer: {
+        flex: 1,
+    },
     camera: {
         flex: 1,
     },
@@ -191,5 +280,21 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    focusIndicator: {
+        position: 'absolute',
+        width: 80,
+        height: 80,
+        borderWidth: 2,
+        borderColor: '#FFD60A',
+        borderRadius: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    focusInner: {
+        width: 4,
+        height: 4,
+        backgroundColor: '#FFD60A',
+        borderRadius: 2,
     },
 });
