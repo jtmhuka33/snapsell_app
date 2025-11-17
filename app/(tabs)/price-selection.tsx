@@ -170,7 +170,7 @@ export default function PriceSelection() {
                     </Text>
                     <View className="bg-blue-50 rounded-lg p-3 ml-12">
                         <Text className="text-sm text-blue-800 font-medium">
-                            📦 {analysisResult.product.manufacturer} {analysisResult.product.title}
+                            📦 {analysisResult.product.title}
                         </Text>
                     </View>
                 </View>
