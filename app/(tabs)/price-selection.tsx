@@ -1,10 +1,10 @@
-import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { PriceResearchResult } from "@/helpers/ebayPriceResearcher";
 import { ProductAnalysis } from "@/types/product";
 
-type ConditionType = 'new' | 'refurbished' | 'used';
+type ConditionType = 'new' | 'refurbished' | 'used' | 'custom';
 
 export default function PriceSelection() {
     const params = useLocalSearchParams();
@@ -21,130 +21,96 @@ export default function PriceSelection() {
 
     const handleSelectCondition = (condition: ConditionType) => {
         setSelectedCondition(condition);
+
+        if (condition === 'custom') {
+            // Navigate to custom price page
+            router.push({
+                pathname: '/(tabs)/custom-price',
+                params: {
+                    analysisResult: JSON.stringify(analysisResult),
+                    priceResults: JSON.stringify(priceResults)
+                }
+            });
+        } else {
+            // Navigate to create listing with selected price data
+            const selectedPrice = priceResults[condition];
+
+            router.push({
+                pathname: '/(tabs)/create-listing',
+                params: {
+                    analysisResult: JSON.stringify(analysisResult),
+                    selectedCondition: condition,
+                    selectedPrice: JSON.stringify(selectedPrice),
+                    recommendedPrice: priceResults.recommendedPrice?.toString() || '',
+                    priceRange: JSON.stringify(priceResults.priceRange || {})
+                }
+            });
+        }
     };
 
-    const handleContinue = () => {
-        if (!selectedCondition) {
-            Alert.alert("No Selection", "Please select a condition to continue.");
-            return;
-        }
-
-        const selectedPrice = priceResults[selectedCondition];
-
-        if (selectedPrice.count === 0) {
-            Alert.alert(
-                "No Data Available",
-                `We couldn't find any ${selectedCondition} listings for this item. Please select a different condition.`
-            );
-            return;
-        }
-
-        // Navigate to create listing with selected price data
-        router.push({
-            pathname: '/(tabs)/create-listing',
-            params: {
-                analysisResult: JSON.stringify(analysisResult),
-                selectedCondition,
-                selectedPrice: JSON.stringify(selectedPrice),
-                recommendedPrice: priceResults.recommendedPrice?.toString() || '',
-                priceRange: JSON.stringify(priceResults.priceRange || {})
-            }
-        });
-    };
-
-    const renderConditionCard = (
+    const renderGridCard = (
         condition: ConditionType,
         title: string,
-        description: string,
-        emoji: string
+        emoji: string,
+        description: string
     ) => {
-        const priceData = priceResults[condition];
-        const isSelected = selectedCondition === condition;
-        const hasData = priceData.count > 0;
+        const isCustom = condition === 'custom';
+        const priceData = !isCustom ? priceResults[condition] : null;
+        const hasData = isCustom || (priceData && priceData.count > 0);
 
         return (
             <TouchableOpacity
                 onPress={() => hasData && handleSelectCondition(condition)}
                 disabled={!hasData}
-                className={`mb-4 rounded-2xl p-6 border-2 ${
-                    isSelected
-                        ? 'bg-blue-50 border-blue-500'
-                        : hasData
-                            ? 'bg-white border-gray-200'
-                            : 'bg-gray-100 border-gray-300 opacity-50'
+                className={`flex-1 rounded-2xl p-3 border-2 ${
+                    hasData
+                        ? 'bg-white border-gray-200 active:bg-blue-50 active:border-blue-500'
+                        : 'bg-gray-100 border-gray-300 opacity-50'
                 }`}
+                style={{ aspectRatio: 1 }}
             >
-                <View className="flex-row items-center justify-between mb-3">
-                    <View className="flex-row items-center gap-3">
-                        <Text className="text-4xl">{emoji}</Text>
-                        <View>
-                            <Text className={`text-xl font-bold ${isSelected ? 'text-blue-700' : 'text-gray-800'}`}>
-                                {title}
-                            </Text>
-                            <Text className="text-sm text-gray-500">{description}</Text>
-                        </View>
+                <View className="flex-1 justify-between" style={{ overflow: 'hidden' }}>
+                    {/* Top Section - Emoji & Title */}
+                    <View className="flex-shrink">
+                        <Text className="text-3xl mb-1">{emoji}</Text>
+                        <Text className="text-base font-bold text-gray-800 mb-0.5">
+                            {title}
+                        </Text>
+                        <Text className="text-xs text-gray-500">
+                            {description}
+                        </Text>
                     </View>
-                    {isSelected && (
-                        <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center">
-                            <Text className="text-white text-xs">✓</Text>
+
+                    {/* Bottom Section - Price Info */}
+                    {hasData && (
+                        <View className="mt-1 flex-shrink-0">
+                            {!isCustom && priceData ? (
+                                <View className="bg-green-50 rounded-lg p-2">
+                                    <Text className="text-xs text-gray-600">
+                                        Median:
+                                    </Text>
+                                    <Text className="text-lg font-bold text-green-600">
+                                        €{priceData.median}
+                                    </Text>
+                                </View>
+                            ) : (
+                                <View className="bg-blue-50 rounded-lg p-2">
+                                    <Text className="text-xs text-blue-700 text-center font-medium">
+                                        Set your own price
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
+                    )}
+
+                    {!hasData && !isCustom && (
+                        <View className="mt-1">
+                            <Text className="text-xs text-gray-500 text-center">
+                                No data
+                            </Text>
                         </View>
                     )}
                 </View>
-
-                {hasData ? (
-                    <>
-                        <View className="mt-4 pt-4 border-t border-gray-200">
-                            {/* Median Price (Most Important) */}
-                            <View className="flex-row justify-between items-center mb-3 bg-green-50 p-3 rounded-lg">
-                                <Text className="text-gray-700 font-semibold">Median Price:</Text>
-                                <Text className="text-xl font-bold text-green-600">
-                                    €{priceData.median}
-                                </Text>
-                            </View>
-
-                            {/* Price Range */}
-                            <View className="flex-row justify-between items-center mb-2">
-                                <Text className="text-gray-600">Price Range:</Text>
-                                <Text className="text-base font-semibold text-gray-800">
-                                    €{priceData.min} - €{priceData.max}
-                                </Text>
-                            </View>
-
-                            {/* Average Price */}
-                            <View className="flex-row justify-between items-center mb-2">
-                                <Text className="text-gray-600">Average Price:</Text>
-                                <Text className="text-base font-semibold text-gray-700">
-                                    €{priceData.average}
-                                </Text>
-                            </View>
-
-                            {/* Data Source Info */}
-                            <View className="flex-row justify-between items-center">
-                                <Text className="text-gray-600">Based on:</Text>
-                                <Text className="text-sm text-gray-500">
-                                    {priceData.count} verified listing{priceData.count !== 1 ? 's' : ''}
-                                </Text>
-                            </View>
-                        </View>
-
-                        {isSelected && (
-                            <View className="mt-4 bg-blue-100 rounded-lg p-3">
-                                <Text className="text-blue-700 text-sm text-center font-medium">
-                                    💡 Suggested listing price: €{priceData.median}
-                                </Text>
-                                <Text className="text-blue-600 text-xs text-center mt-1">
-                                    (Median is more reliable than average)
-                                </Text>
-                            </View>
-                        )}
-                    </>
-                ) : (
-                    <View className="mt-4 pt-4 border-t border-gray-200">
-                        <Text className="text-gray-500 text-center text-sm">
-                            No {condition} listings found for this item
-                        </Text>
-                    </View>
-                )}
             </TouchableOpacity>
         );
     };
@@ -162,11 +128,11 @@ export default function PriceSelection() {
                             <Text className="text-2xl">←</Text>
                         </TouchableOpacity>
                         <Text className="text-2xl font-bold text-gray-800 flex-1">
-                            Select Condition
+                            Select Pricing Option
                         </Text>
                     </View>
                     <Text className="text-gray-600 mb-4 ml-12">
-                        Choose the condition that best matches your item
+                        Choose a condition or set your own price
                     </Text>
                     <View className="bg-blue-50 rounded-lg p-3 ml-12">
                         <Text className="text-sm text-blue-800 font-medium">
@@ -176,44 +142,57 @@ export default function PriceSelection() {
                 </View>
 
                 {/* Info Banner */}
-                <View className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-6 mt-4">
+                <View className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-6 mt-6 mb-4">
                     <Text className="text-yellow-800 text-xs font-semibold mb-1">
-                        💡 How prices are calculated:
+                        💡 Pricing based on eBay listings:
                     </Text>
                     <Text className="text-yellow-700 text-xs">
-                        • Median price is the middle value - most reliable{'\n'}
-                        • Outliers (extreme prices) are automatically removed{'\n'}
-                        • More listings = more reliable pricing data
+                        • Median prices are most reliable{'\n'}
+                        • Outliers automatically removed{'\n'}
+                        • Or set your own custom price
                     </Text>
                 </View>
 
-                {/* Condition Cards */}
-                <View className="p-6">
-                    {renderConditionCard(
-                        'new',
-                        'New',
-                        'Brand new, never used',
-                        '✨'
-                    )}
-                    {renderConditionCard(
-                        'refurbished',
-                        'Refurbished',
-                        'Professionally restored',
-                        '🔧'
-                    )}
-                    {renderConditionCard(
-                        'used',
-                        'Used',
-                        'Previously owned',
-                        '📦'
-                    )}
+                {/* 2x2 Grid */}
+                <View className="px-6">
+                    {/* First Row */}
+                    <View className="flex-row gap-4 mb-4">
+                        {renderGridCard(
+                            'new',
+                            'New',
+                            '✨',
+                            'Brand new'
+                        )}
+                        {renderGridCard(
+                            'refurbished',
+                            'Refurbished',
+                            '🔧',
+                            'Restored'
+                        )}
+                    </View>
+
+                    {/* Second Row */}
+                    <View className="flex-row gap-4 mb-6">
+                        {renderGridCard(
+                            'used',
+                            'Used',
+                            '📦',
+                            'Pre-owned'
+                        )}
+                        {renderGridCard(
+                            'custom',
+                            'Custom Price',
+                            '💰',
+                            'Set your own'
+                        )}
+                    </View>
                 </View>
 
                 {/* Search Info */}
                 <View className="px-6 pb-6">
                     <View className="bg-gray-100 rounded-lg p-4">
                         <Text className="text-xs text-gray-600 text-center">
-                            Prices from active eBay listings in Germany
+                            Market data from eBay Germany
                         </Text>
                         <Text className="text-xs text-gray-500 text-center mt-1">
                             Search: {priceResults.searchQuery}
@@ -221,21 +200,6 @@ export default function PriceSelection() {
                     </View>
                 </View>
             </ScrollView>
-
-            {/* Continue Button */}
-            <View className="bg-white border-t border-gray-200 p-6">
-                <TouchableOpacity
-                    onPress={handleContinue}
-                    disabled={!selectedCondition}
-                    className={`py-4 rounded-xl ${
-                        selectedCondition ? 'bg-blue-500' : 'bg-gray-300'
-                    }`}
-                >
-                    <Text className="text-white text-center text-lg font-bold">
-                        {selectedCondition ? 'Continue with Selected Condition' : 'Select a Condition'}
-                    </Text>
-                </TouchableOpacity>
-            </View>
         </View>
     );
 }

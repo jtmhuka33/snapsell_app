@@ -13,6 +13,7 @@ export default function TabLayout() {
             <Stack.Screen name="review" options={{headerShown: false}}/>
             <Stack.Screen name="price-loading" options={{headerShown: false}}/>
             <Stack.Screen name="price-selection" options={{headerShown: false}}/>
+            <Stack.Screen name="custom-price" options={{headerShown: false}}/>
             <Stack.Screen name="create-listing" options={{headerShown: false}}/>
         </Stack>
     )
