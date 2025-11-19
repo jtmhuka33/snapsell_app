@@ -115,26 +115,26 @@ export default function CustomPrice() {
     const marketReference = getMarketReference();
 
     return (
-        <View className="flex-1 bg-gray-50">
+        <View className="flex-1 bg-gray-50 dark:bg-black">
             <ScrollView className="flex-1" keyboardShouldPersistTaps="handled">
                 {/* Header with Back Button */}
-                <View className="bg-white p-6 border-b border-gray-200">
+                <View className="bg-white dark:bg-gray-900 p-6 border-b border-gray-200 dark:border-gray-800">
                     <View className="flex-row items-center mb-2">
                         <TouchableOpacity
                             onPress={handleBack}
                             className="mr-3 p-2 -ml-2"
                         >
-                            <Text className="text-2xl">←</Text>
+                            <Text className="text-2xl dark:text-white">←</Text>
                         </TouchableOpacity>
-                        <Text className="text-2xl font-bold text-gray-800 flex-1">
+                        <Text className="text-2xl font-bold text-gray-800 dark:text-white flex-1">
                             Set Custom Price
                         </Text>
                     </View>
-                    <Text className="text-gray-600 mb-4 ml-12">
+                    <Text className="text-gray-600 dark:text-gray-400 mb-4 ml-12">
                         Enter your desired listing price
                     </Text>
-                    <View className="bg-blue-50 rounded-lg p-3 ml-12">
-                        <Text className="text-sm text-blue-800 font-medium">
+                    <View className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-3 ml-12">
+                        <Text className="text-sm text-blue-800 dark:text-blue-300 font-medium">
                             📦 {analysisResult.product.title}
                         </Text>
                     </View>
@@ -142,27 +142,27 @@ export default function CustomPrice() {
 
                 {/* Price Input Section */}
                 <View className="p-6">
-                    <View className="bg-white rounded-2xl p-6 border-2 border-gray-200 mb-4">
-                        <Text className="text-lg font-bold text-gray-800 mb-4">
+                    <View className="bg-white dark:bg-gray-900 rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 mb-4">
+                        <Text className="text-lg font-bold text-gray-800 dark:text-white mb-4">
                             Enter Price (EUR)
                         </Text>
 
-                        <View className="flex-row items-center bg-gray-50 rounded-xl border-2 border-gray-200 px-4">
-                            <Text className="text-3xl font-bold text-gray-700 mr-2">€</Text>
+                        <View className="flex-row items-center bg-gray-50 dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700 px-4">
+                            <Text className="text-3xl font-bold text-gray-700 dark:text-gray-300 mr-2">€</Text>
                             <TextInput
                                 value={customPrice}
                                 onChangeText={handlePriceChange}
                                 placeholder="0.00"
                                 placeholderTextColor="#9CA3AF"
                                 keyboardType="decimal-pad"
-                                className="flex-1 text-3xl font-bold text-gray-900 py-4"
+                                className="flex-1 text-3xl font-bold text-gray-900 dark:text-white py-4"
                                 autoFocus
                             />
                         </View>
 
                         {errorMessage ? (
-                            <View className="mt-3 bg-red-50 rounded-lg p-3">
-                                <Text className="text-red-600 text-sm">
+                            <View className="mt-3 bg-red-50 dark:bg-red-900/30 rounded-lg p-3">
+                                <Text className="text-red-600 dark:text-red-400 text-sm">
                                     ⚠️ {errorMessage}
                                 </Text>
                             </View>
@@ -171,33 +171,33 @@ export default function CustomPrice() {
 
                     {/* Market Reference - only show if we have data */}
                     {marketReference && marketReference.length > 0 && (
-                        <View className="bg-white rounded-2xl p-6 border-2 border-gray-200">
-                            <Text className="text-base font-bold text-gray-800 mb-4">
+                        <View className="bg-white dark:bg-gray-900 rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800">
+                            <Text className="text-base font-bold text-gray-800 dark:text-white mb-4">
                                 📊 Market Reference
                             </Text>
-                            <Text className="text-xs text-gray-600 mb-3">
+                            <Text className="text-xs text-gray-600 dark:text-gray-400 mb-3">
                                 Similar items on eBay:
                             </Text>
 
                             {marketReference.map((ref, index) => (
                                 <View
                                     key={index}
-                                    className="flex-row justify-between items-center py-3 border-b border-gray-100 last:border-b-0"
+                                    className="flex-row justify-between items-center py-3 border-b border-gray-100 dark:border-gray-800 last:border-b-0"
                                 >
                                     <View className="flex-row items-center gap-2">
                                         <Text className="text-xl">{ref.emoji}</Text>
-                                        <Text className="text-sm text-gray-700 font-medium">
+                                        <Text className="text-sm text-gray-700 dark:text-gray-300 font-medium">
                                             {ref.name}
                                         </Text>
                                     </View>
-                                    <Text className="text-base font-bold text-green-600">
+                                    <Text className="text-base font-bold text-green-600 dark:text-green-400">
                                         €{ref.median}
                                     </Text>
                                 </View>
                             ))}
 
-                            <View className="mt-4 bg-yellow-50 rounded-lg p-3">
-                                <Text className="text-yellow-700 text-xs text-center">
+                            <View className="mt-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg p-3">
+                                <Text className="text-yellow-700 dark:text-yellow-300 text-xs text-center">
                                     💡 These are median market prices for reference
                                 </Text>
                             </View>
@@ -205,20 +205,20 @@ export default function CustomPrice() {
                     )}
 
                     {/* Pricing Tips */}
-                    <View className="mt-4 bg-blue-50 rounded-2xl p-5 border-l-4 border-blue-400">
-                        <Text className="text-blue-800 font-semibold mb-2 text-sm">
+                    <View className="mt-4 bg-blue-50 dark:bg-blue-900/30 rounded-2xl p-5 border-l-4 border-blue-400 dark:border-blue-600">
+                        <Text className="text-blue-800 dark:text-blue-300 font-semibold mb-2 text-sm">
                             💡 Pricing Tips:
                         </Text>
-                        <Text className="text-blue-700 text-xs mb-1">
+                        <Text className="text-blue-700 dark:text-blue-400 text-xs mb-1">
                             • Price competitively to attract buyers
                         </Text>
-                        <Text className="text-blue-700 text-xs mb-1">
+                        <Text className="text-blue-700 dark:text-blue-400 text-xs mb-1">
                             • Consider item condition & features
                         </Text>
-                        <Text className="text-blue-700 text-xs mb-1">
+                        <Text className="text-blue-700 dark:text-blue-400 text-xs mb-1">
                             • Include room for negotiation
                         </Text>
-                        <Text className="text-blue-700 text-xs">
+                        <Text className="text-blue-700 dark:text-blue-400 text-xs">
                             • Factor in listing & shipping fees
                         </Text>
                     </View>
@@ -226,12 +226,12 @@ export default function CustomPrice() {
             </ScrollView>
 
             {/* Continue Button */}
-            <View className="bg-white border-t border-gray-200 p-6">
+            <View className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-6">
                 <TouchableOpacity
                     onPress={handleContinue}
                     disabled={!customPrice.trim()}
                     className={`py-4 rounded-xl ${
-                        customPrice.trim() ? 'bg-blue-500' : 'bg-gray-300'
+                        customPrice.trim() ? 'bg-blue-500 dark:bg-blue-600' : 'bg-gray-300 dark:bg-gray-700'
                     }`}
                 >
                     <Text className="text-white text-center text-lg font-bold">

@@ -51,28 +51,28 @@ export default function PriceLoading() {
 
     if (error) {
         return (
-            <View className="flex-1 bg-white justify-center items-center px-6">
+            <View className="flex-1 bg-white dark:bg-black justify-center items-center px-6">
                 {/* Back Button */}
                 <TouchableOpacity
                     onPress={handleBack}
                     className="absolute top-12 left-4 p-2 z-10"
                 >
-                    <Text className="text-2xl">←</Text>
+                    <Text className="text-2xl dark:text-white">←</Text>
                 </TouchableOpacity>
 
                 <Text className="text-6xl mb-4">❌</Text>
-                <Text className="text-xl font-bold text-gray-800 mb-2">
+                <Text className="text-xl font-bold text-gray-800 dark:text-white mb-2">
                     Error Researching Prices
                 </Text>
-                <Text className="text-gray-600 text-center mb-6">
+                <Text className="text-gray-600 dark:text-gray-400 text-center mb-6">
                     {error}
                 </Text>
-                <Text className="text-sm text-gray-500 text-center mb-6">
+                <Text className="text-sm text-gray-500 dark:text-gray-500 text-center mb-6">
                     Please check your eBay API credentials and try again
                 </Text>
                 <TouchableOpacity
                     onPress={handleBack}
-                    className="bg-blue-500 px-6 py-3 rounded-lg"
+                    className="bg-blue-500 dark:bg-blue-600 px-6 py-3 rounded-lg"
                 >
                     <Text className="text-white font-semibold">Go Back</Text>
                 </TouchableOpacity>
@@ -81,13 +81,13 @@ export default function PriceLoading() {
     }
 
     return (
-        <View className="flex-1 bg-white justify-center items-center px-6">
+        <View className="flex-1 bg-white dark:bg-black justify-center items-center px-6">
             {/* Back Button */}
             <TouchableOpacity
                 onPress={handleBack}
                 className="absolute top-12 left-4 p-2 z-10"
             >
-                <Text className="text-2xl">←</Text>
+                <Text className="text-2xl dark:text-white">←</Text>
             </TouchableOpacity>
 
             <View className="mb-8">
@@ -95,32 +95,32 @@ export default function PriceLoading() {
                 <ActivityIndicator size="large" color="#3B82F6" />
             </View>
 
-            <Text className="text-2xl font-bold text-gray-800 mb-2 text-center">
+            <Text className="text-2xl font-bold text-gray-800 dark:text-white mb-2 text-center">
                 Researching Prices
             </Text>
 
-            <Text className="text-gray-600 text-center mb-8">
+            <Text className="text-gray-600 dark:text-gray-400 text-center mb-8">
                 {status}
             </Text>
 
-            <View className="bg-blue-50 rounded-lg p-4 w-full">
-                <Text className="text-sm text-blue-800 text-center">
+            <View className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 w-full">
+                <Text className="text-sm text-blue-800 dark:text-blue-300 text-center">
                     Analyzing {analysisResult.product.manufacturer} {analysisResult.product.title}
                 </Text>
             </View>
 
             <View className="mt-8 space-y-2">
                 <View className="flex-row items-center gap-2">
-                    <View className="w-2 h-2 rounded-full bg-green-500" />
-                    <Text className="text-sm text-gray-600">Searching eBay listings</Text>
+                    <View className="w-2 h-2 rounded-full bg-green-500 dark:bg-green-400" />
+                    <Text className="text-sm text-gray-600 dark:text-gray-400">Searching eBay listings</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                    <View className="w-2 h-2 rounded-full bg-blue-500" />
-                    <Text className="text-sm text-gray-600">Comparing prices by condition</Text>
+                    <View className="w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400" />
+                    <Text className="text-sm text-gray-600 dark:text-gray-400">Comparing prices by condition</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                    <View className="w-2 h-2 rounded-full bg-purple-500" />
-                    <Text className="text-sm text-gray-600">Calculating averages</Text>
+                    <View className="w-2 h-2 rounded-full bg-purple-500 dark:bg-purple-400" />
+                    <Text className="text-sm text-gray-600 dark:text-gray-400">Calculating averages</Text>
                 </View>
             </View>
         </View>

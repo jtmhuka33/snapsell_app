@@ -1,5 +1,4 @@
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { PriceResearchResult } from "@/helpers/ebayPriceResearcher";
 import { ProductAnalysis } from "@/types/product";
@@ -11,8 +10,6 @@ export default function PriceSelection() {
     const analysisResult: ProductAnalysis = JSON.parse(params.analysisResult as string);
     const priceResults: PriceResearchResult = JSON.parse(params.priceResults as string);
 
-    const [selectedCondition, setSelectedCondition] = useState<ConditionType | null>(null);
-
     const handleBack = () => {
         if (router.canGoBack()) {
             router.back();
@@ -20,7 +17,6 @@ export default function PriceSelection() {
     };
 
     const handleSelectCondition = (condition: ConditionType) => {
-        setSelectedCondition(condition);
 
         if (condition === 'custom') {
             // Navigate to custom price page
@@ -64,8 +60,8 @@ export default function PriceSelection() {
                 disabled={!hasData}
                 className={`flex-1 rounded-2xl p-3 border-2 ${
                     hasData
-                        ? 'bg-white border-gray-200 active:bg-blue-50 active:border-blue-500'
-                        : 'bg-gray-100 border-gray-300 opacity-50'
+                        ? 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 active:bg-blue-50 dark:active:bg-blue-900/30 active:border-blue-500 dark:active:border-blue-600'
+                        : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-50'
                 }`}
                 style={{ aspectRatio: 1 }}
             >
@@ -73,10 +69,10 @@ export default function PriceSelection() {
                     {/* Top Section - Emoji & Title */}
                     <View className="flex-shrink">
                         <Text className="text-3xl mb-1">{emoji}</Text>
-                        <Text className="text-base font-bold text-gray-800 mb-0.5">
+                        <Text className="text-base font-bold text-gray-800 dark:text-white mb-0.5">
                             {title}
                         </Text>
-                        <Text className="text-xs text-gray-500">
+                        <Text className="text-xs text-gray-500 dark:text-gray-400">
                             {description}
                         </Text>
                     </View>
@@ -85,17 +81,17 @@ export default function PriceSelection() {
                     {hasData && (
                         <View className="mt-1 flex-shrink-0">
                             {!isCustom && priceData ? (
-                                <View className="bg-green-50 rounded-lg p-2">
-                                    <Text className="text-xs text-gray-600">
+                                <View className="bg-green-50 dark:bg-green-900/30 rounded-lg p-2">
+                                    <Text className="text-xs text-gray-600 dark:text-gray-400">
                                         Median:
                                     </Text>
-                                    <Text className="text-lg font-bold text-green-600">
+                                    <Text className="text-lg font-bold text-green-600 dark:text-green-400">
                                         €{priceData.median}
                                     </Text>
                                 </View>
                             ) : (
-                                <View className="bg-blue-50 rounded-lg p-2">
-                                    <Text className="text-xs text-blue-700 text-center font-medium">
+                                <View className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-2">
+                                    <Text className="text-xs text-blue-700 dark:text-blue-300 text-center font-medium">
                                         Set your own price
                                     </Text>
                                 </View>
@@ -105,7 +101,7 @@ export default function PriceSelection() {
 
                     {!hasData && !isCustom && (
                         <View className="mt-1">
-                            <Text className="text-xs text-gray-500 text-center">
+                            <Text className="text-xs text-gray-500 dark:text-gray-400 text-center">
                                 No data
                             </Text>
                         </View>
@@ -116,37 +112,37 @@ export default function PriceSelection() {
     };
 
     return (
-        <View className="flex-1 bg-gray-50">
+        <View className="flex-1 bg-gray-50 dark:bg-black">
             <ScrollView className="flex-1">
                 {/* Header with Back Button */}
-                <View className="bg-white p-6 border-b border-gray-200">
+                <View className="bg-white dark:bg-gray-900 p-6 border-b border-gray-200 dark:border-gray-800">
                     <View className="flex-row items-center mb-2">
                         <TouchableOpacity
                             onPress={handleBack}
                             className="mr-3 p-2 -ml-2"
                         >
-                            <Text className="text-2xl">←</Text>
+                            <Text className="text-2xl dark:text-white">←</Text>
                         </TouchableOpacity>
-                        <Text className="text-2xl font-bold text-gray-800 flex-1">
+                        <Text className="text-2xl font-bold text-gray-800 dark:text-white flex-1">
                             Select Pricing Option
                         </Text>
                     </View>
-                    <Text className="text-gray-600 mb-4 ml-12">
+                    <Text className="text-gray-600 dark:text-gray-400 mb-4 ml-12">
                         Choose a condition or set your own price
                     </Text>
-                    <View className="bg-blue-50 rounded-lg p-3 ml-12">
-                        <Text className="text-sm text-blue-800 font-medium">
+                    <View className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-3 ml-12">
+                        <Text className="text-sm text-blue-800 dark:text-blue-300 font-medium">
                             📦 {analysisResult.product.title}
                         </Text>
                     </View>
                 </View>
 
                 {/* Info Banner */}
-                <View className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-6 mt-6 mb-4">
-                    <Text className="text-yellow-800 text-xs font-semibold mb-1">
+                <View className="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 dark:border-yellow-600 p-4 mx-6 mt-6 mb-4">
+                    <Text className="text-yellow-800 dark:text-yellow-300 text-xs font-semibold mb-1">
                         💡 Pricing based on eBay listings:
                     </Text>
-                    <Text className="text-yellow-700 text-xs">
+                    <Text className="text-yellow-700 dark:text-yellow-400 text-xs">
                         • Median prices are most reliable{'\n'}
                         • Outliers automatically removed{'\n'}
                         • Or set your own custom price
@@ -190,11 +186,11 @@ export default function PriceSelection() {
 
                 {/* Search Info */}
                 <View className="px-6 pb-6">
-                    <View className="bg-gray-100 rounded-lg p-4">
-                        <Text className="text-xs text-gray-600 text-center">
+                    <View className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+                        <Text className="text-xs text-gray-600 dark:text-gray-400 text-center">
                             Market data from eBay Germany
                         </Text>
-                        <Text className="text-xs text-gray-500 text-center mt-1">
+                        <Text className="text-xs text-gray-500 dark:text-gray-500 text-center mt-1">
                             Search: {priceResults.searchQuery}
                         </Text>
                     </View>

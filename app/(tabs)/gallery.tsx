@@ -67,45 +67,45 @@ export default function Gallery() {
     }
 
     return (
-        <View className="flex-1 bg-white">
+        <View className="flex-1 bg-white dark:bg-black">
             {/* Header with Back Button */}
-            <View className="p-4 border-b border-gray-200">
+            <View className="p-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
                 <View className="flex-row items-center mb-2">
                     <TouchableOpacity
                         onPress={handleBack}
                         className="mr-3 p-2 -ml-2"
                     >
-                        <Text className="text-2xl">←</Text>
+                        <Text className="text-2xl dark:text-white">←</Text>
                     </TouchableOpacity>
-                    <Text className="text-2xl font-bold text-gray-800 flex-1">Select Photos</Text>
+                    <Text className="text-2xl font-bold text-gray-800 dark:text-white flex-1">Select Photos</Text>
                 </View>
-                <Text className="text-gray-600 ml-12">
+                <Text className="text-gray-600 dark:text-gray-400 ml-12">
                     {selectedPhotos.length} of {photoUris.length} selected
                 </Text>
             </View>
 
             {/* Quick Actions */}
-            <View className="flex-row p-4 gap-2">
+            <View className="flex-row p-4 gap-2 bg-white dark:bg-black">
                 <TouchableOpacity
                     onPress={selectAll}
-                    className="flex-1 bg-blue-100 py-3 rounded-lg"
+                    className="flex-1 bg-blue-100 dark:bg-blue-900/50 py-3 rounded-lg"
                 >
-                    <Text className="text-center text-blue-700 font-semibold">
+                    <Text className="text-center text-blue-700 dark:text-blue-300 font-semibold">
                         Select All
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={deselectAll}
-                    className="flex-1 bg-gray-100 py-3 rounded-lg"
+                    className="flex-1 bg-gray-100 dark:bg-gray-800 py-3 rounded-lg"
                 >
-                    <Text className="text-center text-gray-700 font-semibold">
+                    <Text className="text-center text-gray-700 dark:text-gray-300 font-semibold">
                         Deselect All
                     </Text>
                 </TouchableOpacity>
             </View>
 
             {/* Photo Grid */}
-            <ScrollView className="flex-1 p-4">
+            <ScrollView className="flex-1 p-4 bg-white dark:bg-black">
                 <View className="flex-row flex-wrap gap-2">
                     {photoUris.map((uri, index) => {
                         const isSelected = selectedPhotos.includes(uri);
@@ -123,7 +123,7 @@ export default function Gallery() {
                                 />
                                 {isSelected && (
                                     <View style={styles.selectedOverlay}>
-                                        <View className="w-8 h-8 bg-blue-500 rounded-full items-center justify-center">
+                                        <View className="w-8 h-8 bg-blue-500 dark:bg-blue-600 rounded-full items-center justify-center">
                                             <Text className="text-white font-bold">✓</Text>
                                         </View>
                                     </View>
@@ -135,16 +135,16 @@ export default function Gallery() {
             </ScrollView>
 
             {/* Bottom Action Bar */}
-            <View className="p-4 border-t border-gray-200">
+            <View className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
                 <TouchableOpacity
                     onPress={analyzePhotos}
                     disabled={selectedPhotos.length === 0}
                     className={`py-4 rounded-lg ${
-                        selectedPhotos.length === 0 ? 'bg-gray-300' : 'bg-blue-500'
+                        selectedPhotos.length === 0 ? 'bg-gray-300 dark:bg-gray-700' : 'bg-blue-500 dark:bg-blue-600'
                     }`}
                 >
                     <Text className={`text-center font-bold text-base ${
-                        selectedPhotos.length === 0 ? 'text-gray-500' : 'text-white'
+                        selectedPhotos.length === 0 ? 'text-gray-500 dark:text-gray-400' : 'text-white'
                     }`}>
                         Analyze Selected Photos ({selectedPhotos.length})
                     </Text>

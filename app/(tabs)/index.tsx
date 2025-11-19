@@ -1,8 +1,9 @@
 import {View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Pressable} from "react-native";
-import {CameraCapturedPicture, CameraType, CameraView, useCameraPermissions, FlashMode} from "expo-camera";
+import {CameraCapturedPicture, CameraType, CameraView, useCameraPermissions,} from "expo-camera";
 import {useEffect, useRef, useState} from "react";
 import {Image} from "expo-image";
 import {router} from "expo-router";
+import {useColorScheme} from "@/hooks/use-color-scheme";
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -11,8 +12,10 @@ import Animated, {
 } from 'react-native-reanimated';
 
 export default function Index() {
+    const colorScheme = useColorScheme();
+    const isDark = colorScheme === 'dark';
+
     const [facing, setFacing] = useState<CameraType>('back');
-    const [flashMode, setFlashMode] = useState<FlashMode>('off');
     const [permission, requestPermission] = useCameraPermissions();
     const [photos, setPhotos] = useState<CameraCapturedPicture[]>([]);
     const [currentPhoto, setCurrentPhoto] = useState<CameraCapturedPicture | undefined>();
@@ -77,17 +80,17 @@ export default function Index() {
 
     if (!permission) {
         return (
-            <View>
-                <Text>This app requires access to your camera to work</Text>
+            <View className="flex-1 bg-white dark:bg-black justify-center items-center">
+                <Text className="text-gray-900 dark:text-white">This app requires access to your camera to work</Text>
             </View>
         );
     }
 
     if (!permission.granted) {
         return (
-            <View className="flex-1 justify-center">
-                <Text className="text-center pb-5">We need your permission to show the camera</Text>
-                <TouchableOpacity onPress={requestPermission} className="bg-blue-500 mx-5 p-4 rounded-lg">
+            <View className="flex-1 justify-center bg-white dark:bg-black">
+                <Text className="text-center pb-5 text-gray-900 dark:text-white">We need your permission to show the camera</Text>
+                <TouchableOpacity onPress={requestPermission} className="bg-blue-500 dark:bg-blue-600 mx-5 p-4 rounded-lg">
                     <Text className="text-white text-center font-bold">Grant Permission</Text>
                 </TouchableOpacity>
             </View>
@@ -112,20 +115,6 @@ export default function Index() {
     function toggleCameraFacing() {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
     }
-
-    const toggleFlash = () => {
-        setFlashMode(current => {
-            if (current === 'off') return 'on';
-            if (current === 'on') return 'auto';
-            return 'off';
-        });
-    };
-
-    const getFlashIcon = () => {
-        if (flashMode === 'off') return '⚡️';
-        if (flashMode === 'on') return '⚡';
-        return '⚡️A';
-    };
 
     const retakePhoto = () => {
         setCurrentPhoto(undefined);
@@ -157,10 +146,10 @@ export default function Index() {
     // Preview screen after taking a photo
     if (currentPhoto) {
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, isDark && styles.containerDark]}>
                 <Image source={{uri: currentPhoto.uri}} style={styles.preview}/>
 
-                <View style={styles.previewControls}>
+                <View style={[styles.previewControls, isDark && styles.previewControlsDark]}>
                     <TouchableOpacity onPress={retakePhoto} style={styles.retakeButton}>
                         <Text style={styles.buttonText}>Retake</Text>
                     </TouchableOpacity>
@@ -175,7 +164,7 @@ export default function Index() {
 
     // Main camera view
     return (
-        <View className="flex-1">
+        <View className="flex-1 bg-black">
             <Pressable onPress={handleCameraPress} style={styles.cameraContainer}>
                 <CameraView
                     autofocus={isRefreshing ? "off" : "on"}
@@ -204,7 +193,7 @@ export default function Index() {
             {/* Photo counter and gallery preview */}
             {photos.length > 0 && (
                 <View className="absolute top-12 left-0 right-20 px-5">
-                    <View className="bg-black/70 rounded-lg p-3">
+                    <View className="bg-black/70 dark:bg-gray-900/70 rounded-lg p-3">
                         <Text className="text-white text-center font-bold mb-2">
                             {photos.length} photo{photos.length !== 1 ? 's' : ''} taken
                         </Text>
@@ -232,22 +221,22 @@ export default function Index() {
             <View className="absolute bottom-0 left-0 right-0 flex-1 flex-row justify-between items-end p-5">
                 <TouchableOpacity
                     onPress={toggleCameraFacing}
-                    className="w-[70px] h-[70px] rounded-[35px] bg-white items-center justify-center border-4 border-black"
+                    className="w-[70px] h-[70px] rounded-[35px] bg-white dark:bg-gray-200 items-center justify-center border-4 border-black dark:border-gray-700"
                 >
-                    <Text className="text-center font-bold">Flip</Text>
+                    <Text className="text-center font-bold text-black dark:text-gray-900">Flip</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     onPress={takePicture}
-                    className="w-[70px] h-[70px] rounded-[35px] bg-white items-center justify-center border-4 border-black"
+                    className="w-[70px] h-[70px] rounded-[35px] bg-white dark:bg-gray-200 items-center justify-center border-4 border-black dark:border-gray-700"
                 >
-                    <View className="w-[60px] h-[60px] rounded-[30px] bg-black"/>
+                    <View className="w-[60px] h-[60px] rounded-[30px] bg-black dark:bg-gray-900"/>
                 </TouchableOpacity>
 
                 {photos.length > 0 ? (
                     <TouchableOpacity
                         onPress={proceedToSelection}
-                        className="w-[70px] h-[70px] rounded-[35px] bg-green-500 items-center justify-center border-4 border-black"
+                        className="w-[70px] h-[70px] rounded-[35px] bg-green-500 dark:bg-green-600 items-center justify-center border-4 border-black dark:border-gray-700"
                     >
                         <Text className="text-white text-center font-bold text-xs">Next</Text>
                     </TouchableOpacity>
@@ -264,6 +253,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#000',
     },
+    containerDark: {
+        backgroundColor: '#000',
+    },
     cameraContainer: {
         flex: 1,
     },
@@ -278,6 +270,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         padding: 20,
         backgroundColor: 'rgba(0,0,0,0.8)',
+    },
+    previewControlsDark: {
+        backgroundColor: 'rgba(17,24,39,0.9)',
     },
     retakeButton: {
         backgroundColor: '#FF3B30',
