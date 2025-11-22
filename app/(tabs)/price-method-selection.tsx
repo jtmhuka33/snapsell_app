@@ -102,7 +102,7 @@ export default function PriceMethodSelection() {
                             </Text>
 
                             {/* Features */}
-                            <View className="space-y-2">
+                            <View className="space-y-2 mb-3">
                                 <View className="flex-row items-center gap-2">
                                     <View className="w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-blue-400" />
                                     <Text className="text-xs text-gray-600 dark:text-gray-400">
