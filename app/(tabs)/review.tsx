@@ -74,7 +74,7 @@ export default function Review() {
             setStep('description');
             setIsEditing(false);
         } else if (step === 'description') {
-            // All steps complete - navigate to price analysis
+            // All steps complete - navigate to price method selection
             setIsEditing(false);
 
             // Update the analysis result with edited values
@@ -87,7 +87,7 @@ export default function Review() {
             };
 
             router.push({
-                pathname: '/(tabs)/price-loading',
+                pathname: '/(tabs)/price-method-selection',
                 params: {
                     analysisResult: JSON.stringify(updatedAnalysis)
                 }
